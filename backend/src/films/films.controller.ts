@@ -8,8 +8,7 @@ export class FilmsController {
 
   @Get()
   async getAllFilms(): Promise<{ total: number; items: GetFilmDto[] }> {
-    const films = await this.filmsService.getAllFilms();
-    return films;
+    return this.filmsService.getAllFilms();
   }
 
   @Get(':id/schedule')
