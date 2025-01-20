@@ -15,6 +15,7 @@ import { DatabaseModule } from './database/database.module';
     DatabaseModule,
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'public'),
+      exclude: ['/api*'],
     }),
     FilmsModule,
     OrderModule,
