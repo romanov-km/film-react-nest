@@ -4,22 +4,39 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { CreateOrderDto } from './dto/order.dto';
-import { FilmsRepository } from '../repository/film.repository';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Film } from 'src/entities/film.entity';
+import { Schedule } from 'src/entities/schedule.entity';
 
 @Injectable()
 export class OrderService {
-  constructor(private readonly filmRepository: FilmsRepository) {}
+  constructor(
+    @InjectRepository(Film) private readonly filmsRepository: Repository<Film>,
+    @InjectRepository(Schedule)
+    private readonly scheduleRepository: Repository<Schedule>,
+  ) {}
 
+  // Получение фильма по ID
+  async getFilmById(id: string): Promise<Film> {
+    return this.filmsRepository.findOne({
+      where: { id },
+      relations: ['schedule'],
+    });
+  }
+
+  // Создание заказа
   async createOrder(orderData: CreateOrderDto): Promise<any> {
     const { tickets } = orderData;
 
     for (const ticket of tickets) {
-      // Проверяем, что фильм и сеанс существуют
-      const film = await this.filmRepository.getFilmById(ticket.film);
+      // Проверяем, что фильм существует
+      const film = await this.getFilmById(ticket.film);
       if (!film) {
         throw new NotFoundException(`Фильм с ID ${ticket.film} не найден`);
       }
 
+      // Ищем сеанс
       const session = film.schedule.find((s) => s.id === ticket.session);
       if (!session) {
         throw new NotFoundException(`Сеанс с ID ${ticket.session} не найден`);
@@ -34,14 +51,12 @@ export class OrderService {
       }
 
       // Обновляем занятость места
-      session.taken.push(`${ticket.row}:${ticket.seat}`);
-      await this.filmRepository.update(film.id, { schedule: film.schedule });
+      session.taken = [...session.taken, `${ticket.row}:${ticket.seat}`];
+      await this.scheduleRepository.save(session);
     }
 
     // Возвращаем подтверждение заказа
     return {
-      // email,
-      // phone,
       total: tickets.length,
       items: tickets,
     };

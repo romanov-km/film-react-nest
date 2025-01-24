@@ -1,35 +1,44 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { FilmsRepository } from 'src/repository/film.repository';
-import { GetFilmDto } from './dto/films.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Film } from 'src/entities/film.entity';
+import { Repository } from 'typeorm';
+import { Schedule } from 'src/entities/schedule.entity';
 
 @Injectable()
 export class FilmsService {
-  constructor(private readonly filmRepository: FilmsRepository) {}
+  constructor(
+    @InjectRepository(Film) private filmsRepository: Repository<Film>,
+  ) {}
 
-  async getAllFilms(): Promise<{ total: number; items: GetFilmDto[] }> {
-    const films = await this.filmRepository.getAllFilms();
+  async getAllFilms(): Promise<{ total: number; items: Film[] }> {
+    const films = await this.filmsRepository.find();
     return {
       total: films.length,
       items: films.map((film) => ({
         id: film.id,
         title: film.title,
-        director: film.director,
-        rating: film.rating,
-        tags: film.tags,
-        about: film.about,
         description: film.description,
-        image: film.image,
-        cover: film.cover,
         schedule: film.schedule,
+        director: film.director,
+        tags: film.tags,
+        rating: film.rating,
+        cover: film.cover,
+        image: film.image,
+        about: film.about,
       })),
     };
   }
 
-  async getFilmSchedule(id: string) {
-    const film = await this.filmRepository.getFilmById(id);
-    if (!film) {
+  async getFilmSchedule(
+    id: string,
+  ): Promise<{ total: number; items: Schedule[] }> {
+    const films = await this.filmsRepository.findOne({
+      where: { id: id },
+      relations: { schedule: true },
+    });
+    if (!films) {
       throw new NotFoundException(`Фильм с ID ${id} не найден`);
     }
-    return { total: film.schedule.length, items: film.schedule };
+    return { total: films.schedule.length, items: films.schedule };
   }
 }
