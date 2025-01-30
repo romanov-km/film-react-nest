@@ -6,7 +6,9 @@ import {
   Max,
   Min,
   ArrayNotEmpty,
+  ValidateNested,
 } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class GetScheduleDto {
   @IsString()
@@ -79,4 +81,26 @@ export class GetFilmDto {
   @IsArray()
   @ArrayNotEmpty()
   schedule: GetScheduleDto[];
+}
+
+// DTO для списка всех фильмов
+export class GetAllFilmsDto {
+  @IsNumber()
+  total: number;
+
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => GetFilmDto)
+  items: GetFilmDto[];
+}
+
+// DTO для расписания фильма
+export class GetFilmScheduleDto {
+  @IsNumber()
+  total: number;
+
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => GetScheduleDto)
+  items: GetScheduleDto[];
 }

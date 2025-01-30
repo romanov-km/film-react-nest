@@ -1,16 +1,20 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Film } from 'src/entities/film.entity';
+import { Film } from '../entities/film.entity';
 import { Repository } from 'typeorm';
-import { Schedule } from 'src/entities/schedule.entity';
+import { Schedule } from '../entities/schedule.entity';
+import { GetAllFilmsDto, GetFilmScheduleDto } from './dto/films.dto';
 
 @Injectable()
 export class FilmsService {
+  private readonly logger = new Logger(FilmsService.name);
   constructor(
     @InjectRepository(Film) private filmsRepository: Repository<Film>,
+    @InjectRepository(Schedule)
+    private scheduleRepository: Repository<Schedule>,
   ) {}
 
-  async getAllFilms(): Promise<{ total: number; items: Film[] }> {
+  async getAllFilms(): Promise<GetAllFilmsDto> {
     const films = await this.filmsRepository.find();
     return {
       total: films.length,
@@ -29,16 +33,15 @@ export class FilmsService {
     };
   }
 
-  async getFilmSchedule(
-    id: string,
-  ): Promise<{ total: number; items: Schedule[] }> {
-    const films = await this.filmsRepository.findOne({
-      where: { id: id },
-      relations: { schedule: true },
+  async getFilmSchedule(id: string): Promise<GetFilmScheduleDto> {
+    const film = await this.filmsRepository.findOne({
+      where: { id },
+      relations: ['schedule'],
     });
-    if (!films) {
+    if (!film) {
+      this.logger.warn(`Фильм с ID ${id} не найден`);
       throw new NotFoundException(`Фильм с ID ${id} не найден`);
     }
-    return { total: films.schedule.length, items: films.schedule };
+    return { total: film.schedule?.length || 0, items: film.schedule || [] };
   }
 }
