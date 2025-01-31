@@ -1,5 +1,6 @@
 services:
   frontend:
+    image: ghcr.io/romanov-km/frontend:latest
     container_name: frontend
     build:
       context: ./frontend
@@ -12,6 +13,7 @@ services:
       - frontend/.env
 
   backend:
+    image: ghcr.io/romanov-km/backend:latest
     container_name: backend
     build:
       context: ./backend
@@ -28,7 +30,7 @@ services:
     restart: unless-stopped
 
   nginx:
-    image: nginx
+    image: ghcr.io/romanov-km/nginx:latest
     container_name: nginx
     ports:
       - "80:80"
