@@ -1,6 +1,6 @@
 services:
   frontend:
-    image: ghcr.io/romanov-km/frontend:latest
+    image: ghcr.io/romanov-km/film-react-nest/frontend:latest
     container_name: frontend
     build:
       context: ./frontend
@@ -13,7 +13,7 @@ services:
       - frontend/.env
 
   backend:
-    image: ghcr.io/romanov-km/backend:latest
+    image: ghcr.io/romanov-km/film-react-nest/backend:latest
     container_name: backend
     build:
       context: ./backend
