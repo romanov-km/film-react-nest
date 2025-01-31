@@ -41,11 +41,3 @@ jobs:
           file: ./backend/Dockerfile
           push: true
           tags: ghcr.io/romanov-km/film-react-nest/backend:latest
-
-      - name: Сборка и публикация Nginx
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: ./nginx.Dockerfile
-          push: true
-          tags: ghcr.io/romanov-km/film-react-nest/nginx:latest
