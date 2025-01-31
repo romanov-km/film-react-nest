@@ -1,5 +1,9 @@
 # FILM!
 
+Ссылка на рабочий проект: [https://romanovkm.nomorepartiesco.ru/](https://romanovkm.nomorepartiesco.ru/)
+
+Ссылка на PGAdmin: [http://romanovkm.nomorepartiesco.ru:8080/login?next=/](http://romanovkm.nomorepartiesco.ru:8080/login?next=/)
+
 ## Установка
 
 ### MongoDB
