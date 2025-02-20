@@ -6,8 +6,8 @@ import {
 import { CreateOrderDto } from './dto/order.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Film } from 'src/entities/film.entity';
-import { Schedule } from 'src/entities/schedule.entity';
+import { Film } from '../entities/film.entity';
+import { Schedule } from '../entities/schedule.entity';
 
 @Injectable()
 export class OrderService {
